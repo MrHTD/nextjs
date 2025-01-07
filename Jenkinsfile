@@ -1,6 +1,10 @@
 pipeline {
     agent any
     // tools { nodejs "nodejs" }
+    environment{
+        SSH_USER = 'devxonic'
+        SSH_HOST = '192.168.100.14'
+    }
     stages {
         stage("Build") {
             steps {
@@ -29,6 +33,21 @@ pipeline {
                     sh 'pm2 save'
                 }
                 echo "App started successfully"
+            }
+        }
+        stage("SSH") {
+            steps {
+                    sshagent (credentials:['ssh']){
+                        echo "Connecting to machine..."
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no $SSH_USER $SSH_HOST << EOF
+                        echo "Connected to the remote server"
+                        # Example: Navigate to a directory and list files
+                        cd /path/to/your/directory
+                        ls -la
+                        EOF
+                    '''
+                }
             }
         }
         // stage("Configuration Nginx") {
