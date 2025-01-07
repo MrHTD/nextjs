@@ -25,7 +25,8 @@ pipeline {
             steps {
                 nodejs("nodejs") {
                     echo "Starting the application with PM2..."
-                    sh 'pm2 start npm --name app1 -- run start -- -p 3000'
+                    // sh 'pm2 start npm --name app1 -- run start -- -p 3000'
+                    sh 'start ecosystem.config.js'
                     sh 'pm2 ls'
                     sh 'pm2 save'
                 }
