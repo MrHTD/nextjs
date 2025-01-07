@@ -42,6 +42,7 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
                         ls -la
+                        // cd /Projects/Deployments
         
                     '''
                 }
