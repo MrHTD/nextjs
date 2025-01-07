@@ -46,7 +46,7 @@ pipeline {
                         pm2 start "npm start" --name app1 -p 3000'
                         pm2 ls
                         pm2 save
-        
+                        EOF
                     '''
                 }
             }
