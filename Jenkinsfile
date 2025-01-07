@@ -17,6 +17,7 @@ pipeline {
                 nodejs("nodejs") {
                     echo "Installing PM2 globally..."
                     sh 'npm install pm2 -g'
+                    sh 'npm init'
                 }
             }
         }
