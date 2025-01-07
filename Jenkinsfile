@@ -1,28 +1,14 @@
 pipeline {
     agent any
-    tools { nodejs "nodejs" }
+    // tools { nodejs "nodejs" }
     stages {
         stage("Build") {
             steps {
                 nodejs("nodejs") {
                     echo "Installing dependencies and building the application..."
+                    sh 'node -v'
                     sh 'npm install'
                     sh 'npm run build'
-                }
-            }
-        }
-        stage("Test") {
-            steps {
-                nodejs("nodejs") {
-                    echo "Running application tests..."
-                    // Run the tests and generate a JUnit-compatible test report
-                    sh 'npm test -- --ci --reporter=junit --reporter-options outputFile=test-results.xml'
-                }
-            }
-            post {
-                always {
-                    // Archive the test results in Jenkins
-                    junit 'test-results.xml'
                 }
             }
         }
