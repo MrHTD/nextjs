@@ -6,35 +6,35 @@ pipeline {
         SSH_HOST = '192.168.100.14'
     }
     stages {
-        stage("Build") {
-            steps {
-                nodejs("nodejs") {
-                    echo "Installing dependencies and building the application..."
-                    sh 'node -v'
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
-        stage("Installing PM2") {
-            steps {
-                nodejs("nodejs") {
-                    echo "Installing PM2 globally..."
-                    sh 'npm install pm2 -g'
-                }
-            }
-        }
-        stage("Start") {
-            steps {
-                nodejs("nodejs") {
-                    echo "Starting the application with PM2..."
-                    sh 'pm2 start "npm start" --name app1 -p 3000'
-                    sh 'pm2 ls'
-                    sh 'pm2 save'
-                }
-                echo "App started successfully"
-            }
-        }
+        // stage("Build") {
+        //     steps {
+        //         nodejs("nodejs") {
+        //             echo "Installing dependencies and building the application..."
+        //             sh 'node -v'
+        //             sh 'npm install'
+        //             sh 'npm run build'
+        //         }
+        //     }
+        // }
+        // stage("Installing PM2") {
+        //     steps {
+        //         nodejs("nodejs") {
+        //             echo "Installing PM2 globally..."
+        //             sh 'npm install pm2 -g'
+        //         }
+        //     }
+        // }
+        // stage("Start") {
+        //     steps {
+        //         nodejs("nodejs") {
+        //             echo "Starting the application with PM2..."
+        //             sh 'pm2 start "npm start" --name app1 -p 3000'
+        //             sh 'pm2 ls'
+        //             sh 'pm2 save'
+        //         }
+        //         echo "App started successfully"
+        //     }
+        // }
         stage("SSH") {
             steps {
                     sshagent(['ssh']){
@@ -42,7 +42,7 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
                         ls -la
-                        EOF
+        
                     '''
                 }
             }
