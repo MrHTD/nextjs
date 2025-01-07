@@ -41,7 +41,7 @@ pipeline {
                     echo "Connecting to machine..."
                     sh '''
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
-                        "cd /Projects/Deployments; \
+                        "cd /home/devxonic/Projects/deployment; \
                         ls -la; \
                         pm2 start npm --name app1 -- run start -- -p 3000; \
                         pm2 ls; \
