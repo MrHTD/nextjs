@@ -40,10 +40,10 @@ pipeline {
                     sshagent(['ssh']){
                     echo "Connecting to machine..."
                     sh '''
-                        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+                        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST <<EOF
                         cd /Projects/Deployments
                         ls -la
-                        pm2 start "npm start" --name app1 -p 3000
+                        pm2 start npm --name app1 -- run start -- -p 3000
                         pm2 ls
                         pm2 save
                         EOF
