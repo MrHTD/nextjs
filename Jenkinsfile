@@ -31,25 +31,33 @@ pipeline {
                 echo "App started successfully"
             }
         }
-        stage("Deployment") {
+        stage("Configuration Nginx") {
             steps {
                 echo "Configuring Nginx as a reverse proxy..."
                 sh """
                     echo '
                     server {
                         listen 80;
-                        server_name example.com;
-
+                        listen [::]:80;
+                    
+                        root /var/www/html;
+                    
+                        # Add index.php to the list if you are using PHP
+                        index index.html index.htm index.nginx-debian.html;
+                    
+                        # Use a wildcard or localhost for the server_name
+                        server_name _;  # This will accept any domain or IP
+                    
                         location / {
                             proxy_pass http://localhost:3000;
                             proxy_http_version 1.1;
-                            proxy_set_header Upgrade \$http_upgrade;
+                            proxy_set_header Upgrade $http_upgrade;
                             proxy_set_header Connection 'upgrade';
-                            proxy_set_header Host \$host;
-                            proxy_cache_bypass \$http_upgrade;
+                            proxy_set_header Host $host;
+                            proxy_cache_bypass $http_upgrade;
                         }
                     }
-                    ' | sudo tee /etc/nginx/sites-available/nodeapp
+                    ' | sudo tee /etc/nginx/sites-available/next-ap
 
                     sudo ln -s /etc/nginx/sites-available/next-ap /etc/nginx/sites-enabled/
                     sudo nginx -t
