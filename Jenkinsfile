@@ -41,8 +41,11 @@ pipeline {
                     echo "Connecting to machine..."
                     sh '''
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+                        cd /Projects/Deployments
                         ls -la
-                        // cd /Projects/Deployments
+                        pm2 start "npm start" --name app1 -p 3000'
+                        pm2 ls
+                        pm2 save
         
                     '''
                 }
