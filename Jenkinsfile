@@ -43,7 +43,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
                         cd /Projects/Deployments
                         ls -la
-                        pm2 start "npm start" --name app1 -p 3000'
+                        pm2 start "npm start" --name app1 -p 3000
                         pm2 ls
                         pm2 save
                         EOF
