@@ -37,13 +37,10 @@ pipeline {
         }
         stage("SSH") {
             steps {
-                    sshagent (credentials:['ssh']){
-                        echo "Connecting to machine..."
+                    sshagent(['ssh']){
+                    echo "Connecting to machine..."
                     sh '''
-                        ssh -o StrictHostKeyChecking=no $SSH_USER $SSH_HOST << EOF
-                        echo "Connected to the remote server"
-                        # Example: Navigate to a directory and list files
-                        cd /path/to/your/directory
+                        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
                         ls -la
                         EOF
                     '''
