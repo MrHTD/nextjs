@@ -43,9 +43,13 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
                         "cd /home/devxonic/Projects/deployment; \
                         ls -la; \
+                        
+                        npm run build; \
+                        
                         pm2 start npm --name app1 -- run start -- -p 3000; \
                         pm2 ls; \
-                        pm2 save"
+                        pm2 save; \
+                        pm2 logs"
                     '''
                 }
             }
