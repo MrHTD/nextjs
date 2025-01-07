@@ -48,7 +48,7 @@ pipeline {
                         
                         pm2 start npm --name app1 -- run start -- -p 3000; \
                         pm2 ls; \
-                        pm2 save; \
+                        
                         pm2 logs"
                     '''
                 }
