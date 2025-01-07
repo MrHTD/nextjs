@@ -48,8 +48,17 @@ pipeline {
                         
                         pm2 start npm --name app1 -- run start -- -p 3000; \
                         pm2 ls; \
-                        
-                        pm2 logs"
+                        pm2 save"
+                    '''
+                }
+            }
+        }
+        stage("Check PM2 Status") {
+            steps {
+                sshagent(credentials: ['ssh']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
+                    "pm2 ls"
                     '''
                 }
             }
