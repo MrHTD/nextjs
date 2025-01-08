@@ -137,13 +137,16 @@ pipeline {
         //         """
         //     }
         // }
-    }
-    post {
-        always {
-            echo "Pipeline execution completed."
-        }
-        failure {
-            echo "Pipeline execution failed. Check the logs for details."
+        stage("End") {
+            steps {
+                script {
+                    if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
+                        echo "Pipeline completed successfully. 🎉"
+                    } else {
+                        echo "Pipeline encountered errors. Please check the logs. ❌"
+                    }
+                }
+            }
         }
     }
 }
