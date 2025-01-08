@@ -5,8 +5,8 @@ pipeline {
         SSH_USER = 'devxonic'
         SSH_HOST = '192.168.100.14'
         RUN_SUDO = 'export SUDO_ASKPASS=/tmp/mypass.sh'
-        APP_NAME="app1";
-        APP_PORT=3000;
+        APP_NAME = "app1";
+        APP_PORT = 3000;
     }
     stages {
         stage("Git Pull") {
