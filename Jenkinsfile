@@ -61,16 +61,7 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
                         "export $RUN_SUDO;
-                        sudo -A apt update;
-                        
-                        cd /home/devxonic/Projects/deployment;
-                        ls -la;
-                        
-                        npm run build;
-                        
-                        pm2 start npm --name app1 -- run start -- -p 3000;
-                        pm2 ls;
-                        pm2 save"
+                        sudo -A apt update"
                     '''
                 }
             }
@@ -85,8 +76,20 @@ pipeline {
                         ls -la;
                         
                         npm run build;
+
+                        APP_NAME="app1";
+                        APP_PORT=3000;
+        
+                        # Check if the app is running
+                        if pm2 list | grep -w "$APP_NAME" > /dev/null; then
+                            echo "Application $APP_NAME is already running. Restarting it..."
+                            pm2 restart $APP_NAME
+                        else
+                            echo "Application $APP_NAME is not running. Starting it..."
+                            pm2 start npm --name $APP_NAME -- run start -- -p $APP_PORT
+                        fi
                         
-                        pm2 start npm --name app1 -- run start -- -p 3000;
+                        // pm2 start npm --name app1 -- run start -- -p 3000;
                         pm2 ls;
                         pm2 save"
                     '''
