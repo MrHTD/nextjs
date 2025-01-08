@@ -5,6 +5,8 @@ pipeline {
         SSH_USER = 'devxonic'
         SSH_HOST = '192.168.100.14'
         RUN_SUDO = 'export SUDO_ASKPASS=/tmp/mypass.sh'
+        APP_NAME="app1";
+        APP_PORT=3000;
     }
     stages {
         stage("Git Pull") {
@@ -76,9 +78,6 @@ pipeline {
                         ls -la;
                         
                         npm run build;
-
-                        APP_NAME="app1";
-                        APP_PORT=3000;
         
                         # Check if the app is running
                         if pm2 list | grep -w "$APP_NAME" > /dev/null; then
