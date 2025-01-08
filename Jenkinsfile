@@ -4,8 +4,38 @@ pipeline {
     environment{
         SSH_USER = 'devxonic'
         SSH_HOST = '192.168.100.14'
+        RUN_SUDO = 'export SUDO_ASKPASS=/tmp/mypass.sh'
     }
     stages {
+        stage("Git Pull") {
+            steps {
+                sshagent(['ssh']) {
+                    echo "Pulling latest code from Git repository..."
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
+                        "cd /home/devxonic/Projects/deployment;
+
+                        # Check if this is a Git repository
+                        if [ -d .git ]; then
+                            echo "Git repository found."
+        
+                            # Check the current branch
+                            CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                            if [ "$CURRENT_BRANCH" = "main" ]; then
+                                echo "On main branch. Pulling latest changes..."
+                                git pull origin main || { echo "Failed to pull latest changes."; exit 1; }
+                            else
+                                echo "Not on main branch. Current branch is $CURRENT_BRANCH."
+                            fi
+                        else
+                            echo "This directory is not a Git repository! Exiting."
+                            exit 1
+                        fi
+                        "
+                    '''
+                }
+            }
+        }
         // stage("Build") {
         //     steps {
         //         nodejs("nodejs") {
@@ -24,30 +54,40 @@ pipeline {
         //         }
         //     }
         // }
-        // stage("Start") {
-        //     steps {
-        //         nodejs("nodejs") {
-        //             echo "Starting the application with PM2..."
-        //             sh 'pm2 start "npm start" --name app1 -p 3000'
-        //             sh 'pm2 ls'
-        //             sh 'pm2 save'
-        //         }
-        //         echo "App started successfully"
-        //     }
-        // }
-        stage("SSH") {
+        stage("Installation") {
             steps {
                     sshagent(['ssh']){
                     echo "Connecting to machine..."
                     sh '''
                         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
-                        "cd /home/devxonic/Projects/deployment; \
-                        ls -la; \
+                        "export $RUN_SUDO;
+                        sudo -A apt update;
                         
-                        npm run build; \
+                        cd /home/devxonic/Projects/deployment;
+                        ls -la;
                         
-                        pm2 start npm --name app1 -- run start -- -p 3000; \
-                        pm2 ls; \
+                        npm run build;
+                        
+                        pm2 start npm --name app1 -- run start -- -p 3000;
+                        pm2 ls;
+                        pm2 save"
+                    '''
+                }
+            }
+        }
+        stage("Build") {
+            steps {
+                    sshagent(['ssh']){
+                    echo "Connecting to machine..."
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
+                        "cd /home/devxonic/Projects/deployment;
+                        ls -la;
+                        
+                        npm run build;
+                        
+                        pm2 start npm --name app1 -- run start -- -p 3000;
+                        pm2 ls;
                         pm2 save"
                     '''
                 }
