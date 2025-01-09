@@ -85,10 +85,9 @@ pipeline {
                             pm2 restart $APP_NAME
                         else
                             echo "Application $APP_NAME is not running. Starting it..."
-                            pm2 start npm --name $APP_NAME -- run start -- -p $APP_PORT
+                            pm2 start npm --name $APP_NAME -- run start
                         fi
                         
-                        // pm2 start npm --name app1 -- run start -- -p 3000;
                         pm2 ls;
                         pm2 save"
                     '''
