@@ -50,12 +50,15 @@ pipeline {
                             git init
                             git remote add origin $REPO_URL
                             git clone $REPO_URL
-                            git switch -c devops
+                            #git switch -c devops
+                        else
+                            git remote -v
+                            git pull origin main
                         fi
                         
                         # Fetch latest changes
-                        git remote -v;
-                        git pull origin devops;
+                        #git remote -v;
+                        #git pull origin devops;
                         "
                     '''
                 }
