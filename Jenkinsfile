@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         SSH_USER = 'vbox'
-        SSH_HOST = '192.168.100.14'
+        SSH_HOST = '192.168.1.224'
         RUN_SUDO = 'export SUDO_ASKPASS=/home/vbox/secret/mypass.sh'
         APP_NAME = "nextjs"
         REPO_NAME = "nextjs"
