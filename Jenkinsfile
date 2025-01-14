@@ -185,9 +185,12 @@ pipeline {
                 }
             }
         }
-        stage("End") {
-            steps{
-            discordSend description: "Jenkins Pipeline Build", footer: "Footer Text", link: env.BUILD_URL, result: currentBuild.currentResult, title: env.JOB_NAME, webhookURL: "Webhook URL"
+        stage("Notify via Discord") {
+            steps {
+                script {
+                    def message = (currentBuild.result == null || currentBuild.result == 'SUCCESS') ? "✅ Pipeline succeeded for ${APP_NAME}!" : "❌ Pipeline failed for ${APP_NAME}. Check logs!"
+                    discordSend description: message, footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: currentBuild.currentResult, title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+                }
             }
         }
         stage("End") {
