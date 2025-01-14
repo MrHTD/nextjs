@@ -196,6 +196,7 @@ pipeline {
                 }
             }
         }
+    }
         post {
             success {
                 discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
@@ -207,5 +208,4 @@ pipeline {
                 echo "Pipeline completed."
             }
         }
-    }
 }
