@@ -197,15 +197,21 @@ pipeline {
             }
         }
     }
-        post {
-            success {
-                discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
-            }
-            failure {
-                discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
-            }
-            always {
-                echo "Pipeline completed."
+    post {
+        success {
+            script {
+                def logs = currentBuild.rawBuild.getLog(100).join("\n") // Get the last 100 lines of the log
+                discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK, file: [name: env.LOG_FILE, content: logs]
             }
         }
+        failure {
+            script {
+                def logs = currentBuild.rawBuild.getLog(100).join("\n") // Get the last 100 lines of the log
+                discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK, file: [name: env.LOG_FILE, content: logs]
+            }
+        }
+        always {
+            echo "Pipeline completed."
+        }
+    }
 }
