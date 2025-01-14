@@ -197,14 +197,15 @@ pipeline {
             }
         }
         post {
-        success {
-            discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
-        }
-        failure {
-            discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
-        }
-        always {
-            echo "Pipeline completed."
+            success {
+                discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+            }
+            failure {
+                discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+            }
+            always {
+                echo "Pipeline completed."
+            }
         }
     }
 }
