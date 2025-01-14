@@ -8,6 +8,7 @@ pipeline {
         REPO_NAME = "nextjs"
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         BRANCH = "main"
+        DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
     }
     stages {
         stage("Git Pull or Clone") {
@@ -182,6 +183,11 @@ pipeline {
                         pm2 ls;
                     """
                 }
+            }
+        }
+        stage("End") {
+            steps{
+            discordSend description: "Jenkins Pipeline Build", footer: "Footer Text", link: env.BUILD_URL, result: currentBuild.currentResult, title: env.JOB_NAME, webhookURL: "Webhook URL"
             }
         }
         stage("End") {
