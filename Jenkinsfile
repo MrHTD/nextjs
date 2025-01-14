@@ -17,10 +17,15 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
                         set -x
-                        
-                        # Navigate to the Projects directory
-                        echo 'Navigating to /home/vbox/Projects...';
-                        cd /home/vbox/Projects;
+
+                        # Check if the Projects directory exists
+                        if [ ! -d '/home/vbox/Projects' ]; then
+                            echo 'Directory Projects does not exist. Creating it...';
+                            mkdir '/home/vbox/Projects';
+                        else
+                            echo 'Navigating to /home/vbox/Projects...';
+                            cd /home/vbox/Projects;
+                        fi
 
                         # List files to ensure we're in the right directory
                         echo 'Listing contents of Projects directory...';
@@ -71,67 +76,66 @@ pipeline {
                             echo 'Node.js is not installed. Installing Node.js...'
                             # Install Node.js
                             sudo -A apt update
-                            sudo -A apt install -y nodejs
-                            sudo -A apt install -y npm
+                            sudo -A apt install -y nodejs npm
                         fi
                     """
                 }
             }
         }
-        stage("Configuration Nginx") {
-            steps {
-                sshagent(['ssh']) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << 'ENDSSH'
+        // stage("Configuration Nginx") {
+        //     steps {
+        //         sshagent(['ssh']) {
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << 'ENDSSH'
                     
-                        export ${RUN_SUDO};
+        //                 export ${RUN_SUDO};
                     
-                        cd /etc/nginx/sites-available
-                        ls -la
+        //                 cd /etc/nginx/sites-available
+        //                 ls -la
                     
-                        # Check if the Nginx config file exists
-                        if [ ! -f "/etc/nginx/sites-available/${APP_NAME}" ]; then
-                            echo "File ${APP_NAME} does not exist. Creating it..."
+        //                 # Check if the Nginx config file exists
+        //                 if [ ! -f "/etc/nginx/sites-available/${APP_NAME}" ]; then
+        //                     echo "File ${APP_NAME} does not exist. Creating it..."
 
-                            sudo -A touch ${APP_NAME};
+        //                     sudo -A touch ${APP_NAME};
                             
-                            echo 'server {
-                                listen 80;
-                                listen [::]:80;
+        //                     echo 'server {
+        //                         listen 80;
+        //                         listen [::]:80;
                             
-                                root /var/www/html;
-                                index index.html index.htm index.nginx-debian.html;
+        //                         root /var/www/html;
+        //                         index index.html index.htm index.nginx-debian.html;
                             
-                                server_name ${APP_NAME};
+        //                         server_name ${APP_NAME};
                             
-                                location / {
-                                    proxy_pass http://localhost:3001;
-                                    proxy_http_version 1.1;
-                                    proxy_set_header Upgrade \$http_upgrade;
-                                    proxy_set_header Connection \"upgrade\";
-                                    proxy_set_header Host \$host;
-                                    proxy_cache_bypass \$http_upgrade;
-                                }
-                            } ' | sudo -A tee /etc/nginx/sites-available/${APP_NAME} > /dev/null
+        //                         location / {
+        //                             proxy_pass http://localhost:3001;
+        //                             proxy_http_version 1.1;
+        //                             proxy_set_header Upgrade \$http_upgrade;
+        //                             proxy_set_header Connection \"upgrade\";
+        //                             proxy_set_header Host \$host;
+        //                             proxy_cache_bypass \$http_upgrade;
+        //                         }
+        //                     } ' | sudo -A tee /etc/nginx/sites-available/${APP_NAME} > /dev/null
                     
-                        else
-                            echo "File exists. Skipping creation of Nginx configuration file..."
-                        fi
+        //                 else
+        //                     echo "File exists. Skipping creation of Nginx configuration file..."
+        //                 fi
                     
-                        # Check if the symlink exists in sites-enabled
-                        if [ ! -f "/etc/nginx/sites-enabled/${APP_NAME}" ]; then
-                            echo "File ${APP_NAME} does not exist in sites-enabled. Creating link..."
-                            sudo -A ln -sf /etc/nginx/sites-available/${APP_NAME} /etc/nginx/sites-enabled/
-                            sudo -A nginx -t && sudo -A systemctl restart nginx
-                        else
-                            echo 'Validate Nginx configuration and restart';
-                            sudo -A nginx -t && sudo -A systemctl restart nginx
-                        fi
+        //                 # Check if the symlink exists in sites-enabled
+        //                 if [ ! -f "/etc/nginx/sites-enabled/${APP_NAME}" ]; then
+        //                     echo "File ${APP_NAME} does not exist in sites-enabled. Creating link..."
+        //                     sudo -A ln -sf /etc/nginx/sites-available/${APP_NAME} /etc/nginx/sites-enabled/
+        //                     sudo -A nginx -t && sudo -A systemctl restart nginx
+        //                 else
+        //                     echo 'Validate Nginx configuration and restart';
+        //                     sudo -A nginx -t && sudo -A systemctl restart nginx
+        //                 fi
                 
-                    """
-                }
-            }
-        }
+        //             """
+        //         }
+        //     }
+        // }
         stage("Build") {
             steps {
                 sshagent(['ssh']){
