@@ -185,14 +185,6 @@ pipeline {
                 }
             }
         }
-        stage("Notify via Discord") {
-            steps {
-                script {
-                    def message = (currentBuild.result == null || currentBuild.result == 'SUCCESS') ? "✅ Pipeline succeeded for ${APP_NAME}!" : "❌ Pipeline failed for ${APP_NAME}. Check logs!"
-                    discordSend description: message, footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: currentBuild.currentResult, title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
-                }
-            }
-        }
         stage("End") {
             steps {
                 script {
@@ -204,5 +196,16 @@ pipeline {
                 }
             }
         }
+        post {
+        success {
+            discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+        }
+        failure {
+            discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+        }
+        always {
+            echo "Pipeline completed."
+        }
+    }
     }
 }
