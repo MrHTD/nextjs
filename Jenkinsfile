@@ -9,7 +9,7 @@ pipeline {
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
     }
     stages {
-        stage("Git Pull or Clone") {
+        stage("Git Pull or Cloning") {
             steps {
                 sshagent(['ssh']) {
                     echo "Pulling latest code from Git repository..."
