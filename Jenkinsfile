@@ -187,20 +187,29 @@ pipeline {
         }
     }
     post {
-        success {
-            script {
-                def logs = currentBuild.rawBuild.getLog(100).join("\n") // Get the last 100 lines of the log
-                discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK, file: [name: env.LOG_FILE, content: logs]
-            }
-        }
         failure {
             script {
-                def logs = currentBuild.rawBuild.getLog(100).join("\n") // Get the last 100 lines of the log
-                discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK, file: [name: env.LOG_FILE, content: logs]
+                // Extract last 20 lines of the log
+                def logSnippet = sh(script: "tail -n 20 ${LOG_FILE}", returnStdout: true).trim()
+                discordSend description: "Jenkins Pipeline Build Failed",
+                            footer: "Jenkins Notification",
+                            link: env.BUILD_URL,
+                            result: "FAILURE",
+                            title: env.JOB_NAME,
+                            webhookURL: env.DISCORD_WEBHOOK,
+                            message: "Build failed. Log snippet:\n```\n${logSnippet}\n```"
             }
         }
-        always {
-            echo "Pipeline completed."
+        success {
+            script {
+                discordSend description: "Jenkins Pipeline Build Succeeded",
+                            footer: "Jenkins Notification",
+                            link: env.BUILD_URL,
+                            result: "SUCCESS",
+                            title: env.JOB_NAME,
+                            webhookURL: env.DISCORD_WEBHOOK,
+                            message: "Build succeeded. 🎉"
+            }
         }
     }
 }
