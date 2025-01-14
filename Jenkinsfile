@@ -187,29 +187,14 @@ pipeline {
         }
     }
     post {
-        failure {
-            script {
-                // Extract last 20 lines of the log
-                def logSnippet = sh(script: "tail -n 20 ${LOG_FILE}", returnStdout: true).trim()
-                discordSend description: "Jenkins Pipeline Build Failed",
-                            footer: "Jenkins Notification",
-                            link: env.BUILD_URL,
-                            result: "FAILURE",
-                            title: env.JOB_NAME,
-                            webhookURL: env.DISCORD_WEBHOOK,
-                            message: "Build failed. Log snippet:\n```\n${logSnippet}\n```"
-            }
-        }
         success {
-            script {
-                discordSend description: "Jenkins Pipeline Build Succeeded",
-                            footer: "Jenkins Notification",
-                            link: env.BUILD_URL,
-                            result: "SUCCESS",
-                            title: env.JOB_NAME,
-                            webhookURL: env.DISCORD_WEBHOOK,
-                            message: "Build succeeded. 🎉"
-            }
+            discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+        }
+        failure {
+            discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+        }
+        always {
+            echo "Pipeline completed."
         }
     }
 }
