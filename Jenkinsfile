@@ -70,15 +70,15 @@ pipeline {
                         yarn build
 
                         # Manage app with PM2
-                        npx pm2 ls
-                        if npx pm2 list | grep -qw "${APP_NAME}"; then
+                        pm2 ls
+                        if pm2 list | grep -qw "${APP_NAME}"; then
                             echo "Restarting ${APP_NAME}..."
-                            npx pm2 restart "${APP_NAME}"
+                            pm2 restart "${APP_NAME}"
                         else
                             echo "Starting ${APP_NAME} on PORT=${PORT}..."
-                            npx pm2 start "PORT=${PORT} yarn start" --name "${APP_NAME}"
+                            pm2 start "PORT=${PORT} yarn start" --name "${APP_NAME}"
                         fi
-                        npx pm2 save
+                        pm2 save
                     """
                 }
             }
