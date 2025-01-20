@@ -28,11 +28,11 @@ pipeline {
                         ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}"
 
                         # Navigate to or create the environment directory
-                        if [ ! -d "\$ENV_DIR" ]; then
-                            echo "Creating environment directory: \$ENV_DIR"
-                            mkdir -p "\$ENV_DIR"
+                        if [ ! -d "${ENV_DIR}" ]; then
+                            echo "Creating environment directory: ${ENV_DIR}"
+                            mkdir -p "${ENV_DIR}"
                         fi
-                        cd "\$ENV_DIR"
+                        cd "${ENV_DIR}"
 
                         # Clone or update the repository
                         if [ ! -d "${REPO_NAME}" ]; then
@@ -58,7 +58,7 @@ pipeline {
                         ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}/${REPO_NAME}"
 
                         # Navigate to environment directory
-                        cd "\$ENV_DIR"
+                        cd "${ENV_DIR}"
 
                         # Install dependencies and build
                         if ! command -v yarn &> /dev/null; then
