@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build and deploy')
-        choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Select the deployment environment')
-    }
     environment {
         SSH_USER = 'vbox'
         SSH_HOST = '192.168.1.188'
@@ -13,6 +9,10 @@ pipeline {
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         BRANCH = "${params.BRANCH_NAME ?: 'main'}"
         PORT = "${params.ENVIRONMENT == 'prod' ? '4000' : '3000'}"
+    }
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build and deploy')
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Select the deployment environment')
     }
     stages {
         stage("Git Pull or Clone") {
