@@ -21,7 +21,6 @@ pipeline {
                     echo "Pulling latest code for ${params.ENVIRONMENT} environment..."
                     sh """
                         ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
-                        set -e
                         set -x
 
                         # Navigate to the appropriate development directory
@@ -51,7 +50,6 @@ pipeline {
                     echo "Building application for ${params.ENVIRONMENT} environment..."
                     sh """
                         ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
-                        set -e
 
                         ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}/${REPO_NAME}"
                         cd "$ENV_DIR"
