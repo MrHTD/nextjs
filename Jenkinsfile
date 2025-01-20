@@ -9,6 +9,7 @@ pipeline {
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         BRANCH = "${params.BRANCH_NAME ?: 'main'}"
         PORT = "${params.ENVIRONMENT == 'prod' ? '4000' : '3000'}"
+        DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
     }
     parameters {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build and deploy')
