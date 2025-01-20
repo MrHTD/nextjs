@@ -24,13 +24,15 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
                         set -x
 
-                        # Navigate to the appropriate development directory
+                        # Define environment directory
                         ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}"
-                        if [ ! -d "$ENV_DIR" ]; then
-                            echo "Creating environment directory: $ENV_DIR"
-                            mkdir -p "$ENV_DIR"
+
+                        # Navigate to or create the environment directory
+                        if [ ! -d "\$ENV_DIR" ]; then
+                            echo "Creating environment directory: \$ENV_DIR"
+                            mkdir -p "\$ENV_DIR"
                         fi
-                        cd "$ENV_DIR"
+                        cd "\$ENV_DIR"
 
                         # Clone or update the repository
                         if [ ! -d "${REPO_NAME}" ]; then
@@ -52,9 +54,13 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
 
+                        # Define environment directory
                         ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}/${REPO_NAME}"
-                        cd "$ENV_DIR"
 
+                        # Navigate to environment directory
+                        cd "\$ENV_DIR"
+
+                        # Install dependencies and build
                         if ! command -v yarn &> /dev/null; then
                             sudo -A npm install -g yarn
                         fi
