@@ -9,9 +9,10 @@ pipeline {
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         BRANCH = "${env.BRANCH_NAME ?: 'main'}"
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
+        PORT = '3000'
     }
     parameters {
-        string(name: 'dev', defaultValue: 'main', description: 'Branch to build and deploy')
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build and deploy')
     }
     stages {
         stage("Git Pull or Clone") {
