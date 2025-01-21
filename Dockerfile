@@ -19,7 +19,6 @@ COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.next /app/.next
 COPY --from=build /app/public /app/public
-COPY --from=build /app/next.config.js /app/next.config.js
 
 # Expose the application port
 EXPOSE 3000
