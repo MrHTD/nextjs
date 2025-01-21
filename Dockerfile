@@ -1,24 +1,17 @@
 FROM node:20 AS build
 WORKDIR /app
 COPY ./package*.json ./
-RUN npm install -g typescript
-RUN npm install
+RUN npm install -g typescript && npm install
 COPY . .
 RUN npm run build
 
 FROM node:20.18.1-alpine
-# Set the working directory
 WORKDIR /app
-# Copy package.json and package-lock.json to the container
-COPY package*.json ./
-# Install dependencies
-RUN npm install
-# Copy the rest of the application code
-COPY --from=build /app/dist /app/dist
-# Build the Next.js app
-RUN npm run build
-# Expose the port that the app will run on
-EXPOSE 3000
-# Start the Next.js app
-CMD ["npm", "start"]
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next /app/.next  # Use .next for Next.js builds
+COPY --from=build /app/public /app/public
+COPY --from=build /app/next.config.js /app/next.config.js  # If you have a Next.js config
 
+EXPOSE 3000
+CMD ["npm", "start"]
