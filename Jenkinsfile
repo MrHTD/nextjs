@@ -1,48 +1,58 @@
 pipeline {
     agent any
     environment {
-        SSH_USER = 'vbox'
-        SSH_HOST = '192.168.1.188'
-        RUN_SUDO = 'export SUDO_ASKPASS=/home/vbox/secret/mypass.sh'
-        APP_NAME = "${params.ENVIRONMENT == 'prod' ? 'NextJsAppProd' : 'NextJsAppDev'}"
+        APP_NAME = "nextjs"
         REPO_NAME = "nextjs"
-        REPO_URL = "git@github.com:MrHTD/nextjs.git"
-        BRANCH = "${params.BRANCH_NAME ?: 'main'}"
-        PORT = "${params.ENVIRONMENT == 'prod' ? '4000' : '3000'}"
+        REPO_URL = "git@github.com:ahmed/nextjs.git"
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
-    }
-    parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build and deploy')
-        choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Select the deployment environment')
+        PORT = '4011'
     }
     stages {
         stage("Git Pull or Clone") {
             steps {
                 sshagent(['ssh']) {
-                    echo "Pulling latest code for ${params.ENVIRONMENT} environment..."
+                    echo "Pulling latest code from Git repository..."
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
+                        ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
                         set -x
 
-                        # Define environment directory
-                        ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}"
-
-                        # Navigate to or create the environment directory
-                        if [ ! -d "${ENV_DIR}" ]; then
-                            echo "Creating environment directory: ${ENV_DIR}"
-                            mkdir -p "${ENV_DIR}"
+                        # Check if the development directory exists
+                        if [ ! -d '/home/ahmed/development' ]; then
+                            echo 'Directory development does not exist. Creating it...';
+                            mkdir '/home/ahmed/development';
+                        else
+                            echo 'Navigating to the /home/ahmed/development...';
+                            cd /home/ahmed/development;
                         fi
-                        cd "${ENV_DIR}"
 
-                        # Clone or update the repository
-                        if [ ! -d "${REPO_NAME}" ]; then
-                            echo "Cloning repository for ${params.ENVIRONMENT} environment..."
-                            git clone ${REPO_URL} ${REPO_NAME}
+                        # List files to ensure we're in the right directory
+                        echo 'Listing contents of development directory...';
+                        ls -la;
+
+                        # Check if the repository folder exists inside development
+                        if [ ! -d '${REPO_NAME}' ]; then
+                            echo 'Repository folder does not exist. Cloning repository...';
+                            git clone ${REPO_URL} ${REPO_NAME};
+                            cd ${REPO_NAME};
+                            git switch ${env.BRANCH_NAME};
+                        else
+                            echo 'Repository folder exists. Checking if it is a Git repository...';
+                            cd ${REPO_NAME};
+    
+                            # Check if it's a Git repository
+                            if [ ! -d '.git' ]; then
+                                echo 'Not a Git repository. Initializing repository...';
+                                git init;
+                                git remote add origin ${REPO_URL};
+                                git fetch origin;
+                                git switch ${env.BRANCH_NAME};
+                            else
+                                echo 'Directory is a Git repository. Pulling latest changes...';
+                                git fetch origin;
+                                git switch ${env.BRANCH_NAME};
+                                git pull origin ${env.BRANCH_NAME};
+                            fi
                         fi
-                        cd ${REPO_NAME}
-                        git fetch origin
-                        git switch ${BRANCH}
-                        git pull origin ${BRANCH}
                     """
                 }
             }
@@ -50,78 +60,105 @@ pipeline {
         stage("Build") {
             steps {
                 sshagent(['ssh']) {
-                    echo "Building application for ${params.ENVIRONMENT} environment..."
+                    echo "Building the application..."
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} << ENDSSH
+                        ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        set -x
+                        
+                        export ${env.RUN_SUDO};
 
-                        # Define environment directory
-                        ENV_DIR="/home/${SSH_USER}/development/${params.ENVIRONMENT}/${REPO_NAME}"
+                        cd /home/ahmed/development/${REPO_NAME}
 
-                        # Navigate to environment directory
-                        cd "${ENV_DIR}"
-
-                        # Install dependencies and build
+                        # Ensure Yarn is installed
                         if ! command -v yarn &> /dev/null; then
+                            echo 'Yarn not found. Installing...'
                             sudo -A npm install -g yarn
-                        fi
-
-                        yarn cache clean
-                        yarn install
-                        yarn build
-
-                        # Manage app with PM2
-                        pm2 ls
-                        if pm2 list | grep -qw "${APP_NAME}"; then
-                            echo "Restarting ${APP_NAME}..."
-                            pm2 restart "${APP_NAME}"
                         else
-                            echo "Starting ${APP_NAME} on PORT=${PORT}..."
-                            pm2 start "PORT=${PORT} yarn start" --name "${APP_NAME}"
+                            echo 'Yarn is installed. Skipping installation...'
+                            yarn --version;
                         fi
-                        pm2 save
+
+                        # Clean cache and reinstall dependencies
+                        echo 'Cleaning node_modules and cache...';
+                        yarn cache clean;
+
+                        yarn install;
+
+                        yarn build;
                     """
                 }
             }
         }
-        stage("End") {
+        // stage("Test") {
+        //     steps {
+        //         sshagent(['ssh']) {
+        //             echo "Running tests..."
+        //             script {
+        //                 try {
+        //                     sh """
+        //                         ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+        //                         set -x
+
+        //                         cd /home/ahmed/development/${REPO_NAME};
+
+        //                         yarn test;
+        //                     """
+        //                 } catch (Exception e) {
+        //                     echo "Tests failed: ${e.message}"
+        //                     discordSend(
+        //                         description: "❌ Tests failed for ${APP_NAME}.",
+        //                         footer: "Jenkins Pipeline Notification",
+        //                         link: env.BUILD_URL,
+        //                         result: "FAILURE",
+        //                         title: env.JOB_NAME,
+        //                         webhookURL: env.DISCORD_WEBHOOK
+        //                     )
+        //                     error("Test stage failed. Stopping pipeline.")
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        stage("Deploy") {
             steps {
-                script {
-                    if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
-                        echo "Pipeline for ${params.ENVIRONMENT} completed successfully. 🎉"
-                    } else {
-                        echo "Pipeline for ${params.ENVIRONMENT} encountered errors. ❌"
-                    }
+                sshagent(['ssh']) {
+                    echo "Deploying the application..."
+                    sh """
+                        ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+
+                        cd /home/ahmed/development/${REPO_NAME};
+
+                        npx pm2 list | grep -w "${APP_NAME}"
+
+                        # Check if the app is running
+                        if npx pm2 list | grep -qw "${APP_NAME}"
+                        then
+                            echo "Application ${APP_NAME} is already running. Restarting it..."
+                            npx pm2 restart "${APP_NAME}"
+                        else
+                            echo "Application ${APP_NAME} is not running. Starting it..."
+                            npx pm2 start "PORT='${PORT}' yarn run start" --name '${APP_NAME}'
+                        fi
+
+                        npx pm2 save;
+
+                        npx pm2 list | grep -w "${APP_NAME}"
+
+                        npx pm2 logs ${APP_NAME} --lines 5 --nostream;
+                    """
                 }
             }
         }
     }
     post {
         success {
-            discordSend description: "✅ Pipeline succeeded for ${APP_NAME} in ${params.ENVIRONMENT} environment!", 
-                        footer: "Jenkins Pipeline Notification", 
-                        link: env.BUILD_URL, 
-                        result: "SUCCESS", 
-                        title: env.JOB_NAME, 
-                        webhookURL: env.DISCORD_WEBHOOK
+            discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
         }
         failure {
-            discordSend description: "❌ Pipeline failed for ${APP_NAME} in ${params.ENVIRONMENT} environment. Check logs!", 
-                        footer: "Jenkins Pipeline Notification", 
-                        link: env.BUILD_URL, 
-                        result: "FAILURE", 
-                        title: env.JOB_NAME, 
-                        webhookURL: env.DISCORD_WEBHOOK
-        }
-        aborted {
-            discordSend description: "⚠️ Pipeline for ${APP_NAME} in ${params.ENVIRONMENT} environment was **aborted**.", 
-                        footer: "Jenkins Pipeline Notification", 
-                        link: env.BUILD_URL, 
-                        result: "ABORTED", 
-                        title: env.JOB_NAME, 
-                        webhookURL: env.DISCORD_WEBHOOK
+            discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
         }
         always {
-            echo "Pipeline completed for ${params.ENVIRONMENT} environment."
+            echo "Pipeline completed."
         }
     }
 }
