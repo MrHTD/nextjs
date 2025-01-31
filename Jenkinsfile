@@ -72,7 +72,7 @@ pipeline {
                         # Ensure Yarn is installed
                         if ! command -v yarn &> /dev/null; then
                             echo 'Yarn not found. Installing...'
-                            sudo -A npm install -g yarn
+                            sudo npm install -g yarn
                         else
                             echo 'Yarn is installed. Skipping installation...'
                             yarn --version;
