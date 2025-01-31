@@ -3,7 +3,7 @@ pipeline {
     environment {
         APP_NAME = "nextjs"
         REPO_NAME = "nextjs"
-        REPO_URL = "git@github.com:ahmed/nextjs.git"
+        REPO_URL = "git@github.com:MrHTD/nextjs.git"
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
         PORT = '4011'
     }
