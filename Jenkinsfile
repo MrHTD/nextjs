@@ -10,10 +10,10 @@ pipeline {
     stages {
         stage("Git Pull or Clone") {
             steps {
-                sshagent(['ssh']) {
+                sshagent(['myubuntu']) {
                     echo "Pulling latest code from Git repository..."
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        ssh -o ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
                         set -x
 
                         # Check if the development directory exists
@@ -59,10 +59,10 @@ pipeline {
         }
         stage("Build") {
             steps {
-                sshagent(['ssh']) {
+                sshagent(['myubuntu']) {
                     echo "Building the application..."
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        ssh -o ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
                         set -x
                         
                         export ${env.RUN_SUDO};
@@ -91,7 +91,7 @@ pipeline {
         }
         // stage("Test") {
         //     steps {
-        //         sshagent(['ssh']) {
+        //         sshagent(['myubuntu']) {
         //             echo "Running tests..."
         //             script {
         //                 try {
@@ -121,10 +121,10 @@ pipeline {
         // }
         stage("Deploy") {
             steps {
-                sshagent(['ssh']) {
+                sshagent(['myubuntu']) {
                     echo "Deploying the application..."
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        ssh -o ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
 
                         cd /home/ahmed/development/${REPO_NAME};
 
