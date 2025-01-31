@@ -65,8 +65,6 @@ pipeline {
                         ssh ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                         set -x
                         
-                        export ${env.RUN_SUDO};
-
                         cd /home/ahmed/development/${REPO_NAME}
 
                         # Ensure Yarn is installed
@@ -89,36 +87,6 @@ pipeline {
                 }
             }
         }
-        // stage("Test") {
-        //     steps {
-        //         sshagent(['myubuntu']) {
-        //             echo "Running tests..."
-        //             script {
-        //                 try {
-        //                     sh """
-        //                         ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
-        //                         set -x
-
-        //                         cd /home/ahmed/development/${REPO_NAME};
-
-        //                         yarn test;
-        //                     """
-        //                 } catch (Exception e) {
-        //                     echo "Tests failed: ${e.message}"
-        //                     discordSend(
-        //                         description: "❌ Tests failed for ${APP_NAME}.",
-        //                         footer: "Jenkins Pipeline Notification",
-        //                         link: env.BUILD_URL,
-        //                         result: "FAILURE",
-        //                         title: env.JOB_NAME,
-        //                         webhookURL: env.DISCORD_WEBHOOK
-        //                     )
-        //                     error("Test stage failed. Stopping pipeline.")
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
         stage("Deploy") {
             steps {
                 sshagent(['myubuntu']) {
