@@ -17,13 +17,13 @@ pipeline {
                         set -x
 
                         # Check if the development directory exists
-                        if [ ! -d '/home/ahmed/development' ]; then
-                            echo 'Directory development does not exist. Creating it...';
-                            mkdir '/home/ahmed/development';
-                        else
-                            echo 'Navigating to the /home/ahmed/development...';
-                            cd /home/ahmed/development;
+                        if [ ! -d "/home/ahmed/development" ]; then
+                            echo "Directory /home/ahmed/development does not exist. Creating it..."
+                            mkdir -p "/home/ahmed/development"  # -p ensures the directory is created only if it doesn't exist
                         fi
+
+                        # Navigate to the directory (outside the if block so it always runs)
+                        cd /home/ahmed/development || { echo "Failed to change directory"; exit 1; }
 
                         # List files to ensure we're in the right directory
                         echo 'Listing contents of development directory...';
