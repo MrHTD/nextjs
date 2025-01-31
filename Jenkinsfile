@@ -13,7 +13,7 @@ pipeline {
                 sshagent(['ssh']) {
                     echo "Pulling latest code from Git repository..."
                     sh """
-                        ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
                         set -x
 
                         # Check if the development directory exists
@@ -62,7 +62,7 @@ pipeline {
                 sshagent(['ssh']) {
                     echo "Building the application..."
                     sh """
-                        ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
                         set -x
                         
                         export ${env.RUN_SUDO};
@@ -96,7 +96,7 @@ pipeline {
         //             script {
         //                 try {
         //                     sh """
-        //                         ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+        //                         ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
         //                         set -x
 
         //                         cd /home/ahmed/development/${REPO_NAME};
@@ -124,7 +124,7 @@ pipeline {
                 sshagent(['ssh']) {
                     echo "Deploying the application..."
                     sh """
-                        ssh -o StrictHostKeyChecking=yes ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
+                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} uname -a << ENDSSH
 
                         cd /home/ahmed/development/${REPO_NAME};
 
