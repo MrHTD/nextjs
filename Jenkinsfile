@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        APP_NAME = "nextjs"
+        APP_DEV = "nextjs"
+        APP_PROD = "nextjs-prod"
         REPO_NAME = "nextjs"
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
@@ -93,14 +94,14 @@ pipeline {
                             sh """
                                 ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                 cd /home/ahmed/development/${REPO_NAME}
-                                if npx pm2 list | grep -qw "${APP_NAME}"
+                                if npx pm2 list | grep -qw "${APP_DEV}"
                                 then
-                                    npx pm2 restart "${APP_NAME}"
+                                    npx pm2 restart "${APP_DEV}"
                                 else
-                                    npx pm2 start "PORT='${DEV_PORT}' yarn run start" --name '${APP_NAME}'
+                                    npx pm2 start "PORT='${DEV_PORT}' yarn run start" --name '${APP_DEV}'
                                 fi
                                 npx pm2 save
-                                npx pm2 logs ${APP_NAME} --lines 5 --nostream
+                                npx pm2 logs ${APP_DEV} --lines 5 --nostream
                             """
                         }
                     }
@@ -111,14 +112,14 @@ pipeline {
                             sh """
                                 ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                 cd /home/ahmed/production/${REPO_NAME}
-                                if npx pm2 list | grep -qw "${APP_NAME}"
+                                if npx pm2 list | grep -qw "${APP_PROD}"
                                 then
-                                    npx pm2 restart "${APP_NAME}"
+                                    npx pm2 restart "${APP_PROD}"
                                 else
-                                    npx pm2 start "PORT='${PROD_PORT}' yarn run start" --name '${APP_NAME}'
+                                    npx pm2 start "PORT='${PROD_PORT}' yarn run start" --name '${APP_PROD}'
                                 fi
                                 npx pm2 save
-                                npx pm2 logs ${APP_NAME} --lines 5 --nostream
+                                npx pm2 logs ${APP_PROD} --lines 5 --nostream
                             """
                         }
                     }
@@ -132,7 +133,7 @@ pipeline {
             script {
                 parallel(
                     "Dev - Success Notification": {
-                        discordSend description: "✅ Dev Pipeline succeeded for ${APP_NAME}!", 
+                        discordSend description: "✅ Dev Pipeline succeeded for ${APP_DEV}!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "SUCCESS", 
@@ -140,7 +141,7 @@ pipeline {
                                     webhookURL: env.DISCORD_WEBHOOK
                     },
                     "Prod - Success Notification": {
-                        discordSend description: "✅ Prod Pipeline succeeded for ${APP_NAME}!", 
+                        discordSend description: "✅ Prod Pipeline succeeded for ${APP_PROD}!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "SUCCESS", 
@@ -154,7 +155,7 @@ pipeline {
             script {
                 parallel(
                     "Dev - Failure Notification": {
-                        discordSend description: "❌ Dev Pipeline failed for ${APP_NAME}. Check logs!", 
+                        discordSend description: "❌ Dev Pipeline failed for ${APP_DEV}. Check logs!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "FAILURE", 
@@ -162,7 +163,7 @@ pipeline {
                                     webhookURL: env.DISCORD_WEBHOOK
                     },
                     "Prod - Failure Notification": {
-                        discordSend description: "❌ Prod Pipeline failed for ${APP_NAME}. Check logs!", 
+                        discordSend description: "❌ Prod Pipeline failed for ${APP_PROD}. Check logs!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "FAILURE", 
