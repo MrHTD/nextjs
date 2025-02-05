@@ -128,25 +128,26 @@ pipeline {
         }
     }
     
+    def sendDiscordNotification(appName, status) {
+        discordSend(
+            description: "✅ ${appName} Pipeline succeeded!" if status == "SUCCESS" else "❌ ${appName} Pipeline failed. Check logs!",
+            footer: "Jenkins Pipeline Notification",
+            link: env.BUILD_URL,
+            result: status,
+            title: env.JOB_NAME,
+            webhookURL: env.DISCORD_WEBHOOK
+        )
+    }
+    
     post {
         success {
             script {
                 parallel(
                     "Dev - Success Notification": {
-                        discordSend description: "✅ Dev Pipeline succeeded for ${DEV_APP_NAME}!", 
-                                    footer: "Jenkins Pipeline Notification", 
-                                    link: env.BUILD_URL, 
-                                    result: "SUCCESS", 
-                                    title: env.JOB_NAME, 
-                                    webhookURL: env.DISCORD_WEBHOOK
+                        sendDiscordNotification(DEV_APP_NAME, "SUCCESS")
                     },
                     "Prod - Success Notification": {
-                        discordSend description: "✅ Prod Pipeline succeeded for ${PROD_APP_NAME}!", 
-                                    footer: "Jenkins Pipeline Notification", 
-                                    link: env.BUILD_URL, 
-                                    result: "SUCCESS", 
-                                    title: env.JOB_NAME, 
-                                    webhookURL: env.DISCORD_WEBHOOK
+                        sendDiscordNotification(PROD_APP_NAME, "SUCCESS")
                     }
                 )
             }
@@ -155,20 +156,10 @@ pipeline {
             script {
                 parallel(
                     "Dev - Failure Notification": {
-                        discordSend description: "❌ Dev Pipeline failed for ${DEV_APP_NAME}. Check logs!", 
-                                    footer: "Jenkins Pipeline Notification", 
-                                    link: env.BUILD_URL, 
-                                    result: "FAILURE", 
-                                    title: env.JOB_NAME, 
-                                    webhookURL: env.DISCORD_WEBHOOK
+                        sendDiscordNotification(DEV_APP_NAME, "FAILURE")
                     },
                     "Prod - Failure Notification": {
-                        discordSend description: "❌ Prod Pipeline failed for ${PROD_APP_NAME}. Check logs!", 
-                                    footer: "Jenkins Pipeline Notification", 
-                                    link: env.BUILD_URL, 
-                                    result: "FAILURE", 
-                                    title: env.JOB_NAME, 
-                                    webhookURL: env.DISCORD_WEBHOOK
+                        sendDiscordNotification(PROD_APP_NAME, "FAILURE")
                     }
                 )
             }
