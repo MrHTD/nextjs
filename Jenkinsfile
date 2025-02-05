@@ -130,7 +130,7 @@ pipeline {
     
     def sendDiscordNotification(appName, status) {
         discordSend(
-            description: "✅ ${appName} Pipeline succeeded!" if status == "SUCCESS" else "❌ ${appName} Pipeline failed. Check logs!",
+            description: status == "SUCCESS" ? "✅ ${appName} Pipeline succeeded!" : "❌ ${appName} Pipeline failed. Check logs!",
             footer: "Jenkins Pipeline Notification",
             link: env.BUILD_URL,
             result: status,
