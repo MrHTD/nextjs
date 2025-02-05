@@ -29,7 +29,7 @@ pipeline {
                             """
                         }
                     }
-                },
+                }
                 stage("Production - Git Operations") {
                     steps {
                         sshagent(['myubuntu']) {
@@ -67,7 +67,7 @@ pipeline {
                             """
                         }
                     }
-                },
+                }
                 stage("Production - Build") {
                     steps {
                         sshagent(['myubuntu']) {
@@ -104,7 +104,7 @@ pipeline {
                             """
                         }
                     }
-                },
+                }
                 stage("Production - Deploy") {
                     steps {
                         sshagent(['myubuntu']) {
