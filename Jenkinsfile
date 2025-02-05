@@ -9,6 +9,18 @@ pipeline {
         DEV_PORT = '3000'
         PROD_PORT = '5000'
     }
+        
+    def sendDiscordNotification(appName, status) {
+        discordSend(
+            description: status == "SUCCESS" ? "✅ ${appName} Pipeline succeeded!" : "❌ ${appName} Pipeline failed. Check logs!",
+            footer: "Jenkins Pipeline Notification",
+            link: env.BUILD_URL,
+            result: status,
+            title: env.JOB_NAME,
+            webhookURL: env.DISCORD_WEBHOOK
+        )
+    }
+    
     stages {
         stage("Git Pull or Clone") {
             parallel {
@@ -127,18 +139,7 @@ pipeline {
             }
         }
     }
-    
-    def sendDiscordNotification(appName, status) {
-        discordSend(
-            description: status == "SUCCESS" ? "✅ ${appName} Pipeline succeeded!" : "❌ ${appName} Pipeline failed. Check logs!",
-            footer: "Jenkins Pipeline Notification",
-            link: env.BUILD_URL,
-            result: status,
-            title: env.JOB_NAME,
-            webhookURL: env.DISCORD_WEBHOOK
-        )
-    }
-    
+
     post {
         success {
             script {
