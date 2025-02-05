@@ -133,8 +133,7 @@ pipeline {
             script {
                 parallel(
                     "Dev - Success Notification": {
-                        sleep 2  // Wait for 2 seconds before sending the next notification
-                        discordSend description: "✅ Dev Pipeline succeeded for ${APP_NAME}!", 
+                        discordSend description: "✅ Dev Pipeline succeeded for ${DEV_APP_NAME}!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "SUCCESS", 
@@ -142,8 +141,7 @@ pipeline {
                                     webhookURL: env.DISCORD_WEBHOOK
                     },
                     "Prod - Success Notification": {
-                        sleep 2  // Wait for 2 seconds before sending the next notification
-                        discordSend description: "✅ Prod Pipeline succeeded for ${APP_NAME}!", 
+                        discordSend description: "✅ Prod Pipeline succeeded for ${PROD_APP_NAME}!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "SUCCESS", 
@@ -157,8 +155,7 @@ pipeline {
             script {
                 parallel(
                     "Dev - Failure Notification": {
-                        sleep 2  
-                        discordSend description: "❌ Dev Pipeline failed for ${APP_NAME}. Check logs!", 
+                        discordSend description: "❌ Dev Pipeline failed for ${DEV_APP_NAME}. Check logs!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "FAILURE", 
@@ -166,8 +163,7 @@ pipeline {
                                     webhookURL: env.DISCORD_WEBHOOK
                     },
                     "Prod - Failure Notification": {
-                        sleep 2  
-                        discordSend description: "❌ Prod Pipeline failed for ${APP_NAME}. Check logs!", 
+                        discordSend description: "❌ Prod Pipeline failed for ${PROD_APP_NAME}. Check logs!", 
                                     footer: "Jenkins Pipeline Notification", 
                                     link: env.BUILD_URL, 
                                     result: "FAILURE", 
@@ -176,6 +172,9 @@ pipeline {
                     }
                 )
             }
+        }
+        always {
+            echo "Pipeline completed."
         }
     }
 }
