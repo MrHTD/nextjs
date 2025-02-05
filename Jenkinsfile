@@ -14,7 +14,6 @@ pipeline {
                 sshagent(['myubuntu']) {
                     parallel (
                         development: {
-                            node('linux') {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     cd /home/ahmed/development
@@ -24,10 +23,8 @@ pipeline {
                                     cd ${REPO_NAME}
                                     git pull origin main
                                 """
-                            }
                         },
                         production: {
-                            node('linux') {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     cd /home/ahmed/production
@@ -49,24 +46,20 @@ pipeline {
                 sshagent(['myubuntu']) {
                     parallel (
                         development: {
-                            node('linux') {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     cd /home/ahmed/development/${REPO_NAME}
                                     yarn install --non-interactive
                                     yarn build
                                 """
-                            }
                         },
                         production: {
-                            node('linux') {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     cd /home/ahmed/production/${REPO_NAME}
                                     yarn install --non-interactive
                                     yarn build
                                 """
-                            }
                         }
                     )
                 }
@@ -78,22 +71,18 @@ pipeline {
                 sshagent(['myubuntu']) {
                     parallel (
                         development: {
-                            node('linux') {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     cd /home/ahmed/development/${REPO_NAME}
                                     npx pm2 restart '${APP_NAME}' || npx pm2 start "PORT='${DEV_PORT}' yarn start" --name '${APP_NAME}'
                                 """
-                            }
                         },
                         production: {
-                            node('linux') {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     cd /home/ahmed/production/${REPO_NAME}
                                     npx pm2 restart '${APP_NAME}' || npx pm2 start "PORT='${PROD_PORT}' yarn start" --name '${APP_NAME}'
                                 """
-                            }
                         }
                     )
                 }
