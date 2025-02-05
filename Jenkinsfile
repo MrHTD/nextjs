@@ -26,7 +26,6 @@ pipeline {
                                 git fetch origin
                                 git switch ${env.BRANCH_NAME}
                                 git pull origin ${env.BRANCH_NAME}
-                                ENDSSH
                             """
                         }
                     }
@@ -46,7 +45,6 @@ pipeline {
                                 git fetch origin
                                 git switch ${env.BRANCH_NAME}
                                 git pull origin ${env.BRANCH_NAME}
-                                ENDSSH
                             """
                         }
                     }
@@ -66,7 +64,6 @@ pipeline {
                                 if ! command -v yarn &> /dev/null; then sudo npm install -g yarn; fi
                                 yarn install
                                 yarn build
-                                ENDSSH
                             """
                         }
                     }
@@ -81,7 +78,6 @@ pipeline {
                                 if ! command -v yarn &> /dev/null; then sudo npm install -g yarn; fi
                                 yarn install
                                 yarn build
-                                ENDSSH
                             """
                         }
                     }
@@ -105,7 +101,6 @@ pipeline {
                                 fi
                                 npx pm2 save
                                 npx pm2 logs ${APP_NAME} --lines 5 --nostream
-                                ENDSSH
                             """
                         }
                     }
@@ -124,7 +119,6 @@ pipeline {
                                 fi
                                 npx pm2 save
                                 npx pm2 logs ${APP_NAME} --lines 5 --nostream
-                                ENDSSH
                             """
                         }
                     }
