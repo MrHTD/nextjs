@@ -5,7 +5,8 @@ pipeline {
         REPO_NAME = "nextjs"
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
-        PORT = '4011'
+        DEV_PORT = '3000'
+        PROD_PORT = '5000'
     }
     stages {
         stage("Git Pull or Clone") {
@@ -13,7 +14,7 @@ pipeline {
                 sshagent(['myubuntu']) {
                     script {
                         parallel(
-                            "Dev - Git Operations": {
+                            "Development - Git Operations": {
                                 echo "Pulling latest code from Git repository..."
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST}<< ENDSSH
@@ -58,7 +59,7 @@ pipeline {
                                     fi
                                 """
                             },     
-                            "Prod - Git Operations": {
+                            "Production - Git Operations": {
                                 echo "Pulling latest code from Git repository..."
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST}<< ENDSSH
@@ -110,70 +111,172 @@ pipeline {
         stage("Build") {
             steps {
                 sshagent(['myubuntu']) {
-                    echo "Building the application..."
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
-                        set -x
-                        
-                        cd /home/ahmed/development/${REPO_NAME}
-
-                        # Ensure Yarn is installed
-                        if ! command -v yarn &> /dev/null; then
-                            echo 'Yarn not found. Installing...'
-                            sudo npm install -g yarn
-                        else
-                            echo 'Yarn is installed. Skipping installation...'
-                            yarn --version;
-                        fi
-
-                        # Clean cache and reinstall dependencies
-                        echo 'Cleaning node_modules and cache...';
-                        yarn cache clean;
-
-                        yarn install;
-
-                        yarn build;
-                    """
+                    script{
+                        parallel(
+                            "Development - Build": {
+                                echo "Building the application..."
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+                                    set -x
+                                    
+                                    cd /home/ahmed/development/${REPO_NAME}
+            
+                                    # Ensure Yarn is installed
+                                    if ! command -v yarn &> /dev/null; then
+                                        echo 'Yarn not found. Installing...'
+                                        sudo npm install -g yarn
+                                    else
+                                        echo 'Yarn is installed. Skipping installation...'
+                                        yarn --version;
+                                    fi
+            
+                                    # Clean cache and reinstall dependencies
+                                    echo 'Cleaning node_modules and cache...';
+                                    yarn cache clean;
+            
+                                    yarn install;
+            
+                                    yarn build;
+                                """
+                            },
+                            "Production - Build": {
+                                echo "Building the application..."
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+                                    set -x
+                                    
+                                    cd /home/ahmed/production/${REPO_NAME}
+            
+                                    # Ensure Yarn is installed
+                                    if ! command -v yarn &> /dev/null; then
+                                        echo 'Yarn not found. Installing...'
+                                        sudo npm install -g yarn
+                                    else
+                                        echo 'Yarn is installed. Skipping installation...'
+                                        yarn --version;
+                                    fi
+            
+                                    # Clean cache and reinstall dependencies
+                                    echo 'Cleaning node_modules and cache...';
+                                    yarn cache clean;
+            
+                                    yarn install;
+            
+                                    yarn build;
+                                """
+                            }
+                        )
+                    }
                 }
             }
         }
         stage("Deploy") {
             steps {
                 sshagent(['myubuntu']) {
-                    echo "Deploying the application..."
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
-
-                        cd /home/ahmed/development/${REPO_NAME};
-
-                        npx pm2 list | grep -w "${APP_NAME}"
-
-                        # Check if the app is running
-                        if npx pm2 list | grep -qw "${APP_NAME}"
-                        then
-                            echo "Application ${APP_NAME} is already running. Restarting it..."
-                            npx pm2 restart "${APP_NAME}"
-                        else
-                            echo "Application ${APP_NAME} is not running. Starting it..."
-                            npx pm2 start "PORT='${PORT}' yarn run start" --name '${APP_NAME}'
-                        fi
-
-                        npx pm2 save;
-
-                        npx pm2 list | grep -w "${APP_NAME}"
-
-                        npx pm2 logs ${APP_NAME} --lines 5 --nostream;
-                    """
+                    script{
+                        parallel(
+                            "Development - Deploy": {
+                                echo "Deploying the application..."
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+            
+                                    cd /home/ahmed/development/${REPO_NAME};
+            
+                                    npx pm2 list | grep -w "${APP_NAME}"
+            
+                                    # Check if the app is running
+                                    if npx pm2 list | grep -qw "${APP_NAME}"
+                                    then
+                                        echo "Application ${APP_NAME} is already running. Restarting it..."
+                                        npx pm2 restart "${APP_NAME}"
+                                    else
+                                        echo "Application ${APP_NAME} is not running. Starting it..."
+                                        npx pm2 start "PORT='${DEV_PORT}' yarn run start" --name '${APP_NAME}'
+                                    fi
+            
+                                    npx pm2 save;
+            
+                                    npx pm2 list | grep -w "${APP_NAME}"
+            
+                                    npx pm2 logs ${APP_NAME} --lines 5 --nostream;
+                                """
+                            },
+                            "Production - Deploy": {
+                                echo "Deploying the application..."
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+            
+                                    cd /home/ahmed/production/${REPO_NAME};
+            
+                                    npx pm2 list | grep -w "${APP_NAME}"
+            
+                                    # Check if the app is running
+                                    if npx pm2 list | grep -qw "${APP_NAME}"
+                                    then
+                                        echo "Application ${APP_NAME} is already running. Restarting it..."
+                                        npx pm2 restart "${APP_NAME}"
+                                    else
+                                        echo "Application ${APP_NAME} is not running. Starting it..."
+                                        npx pm2 start "PORT='${PROD_PORT}' yarn run start" --name '${APP_NAME}'
+                                    fi
+            
+                                    npx pm2 save;
+            
+                                    npx pm2 list | grep -w "${APP_NAME}"
+            
+                                    npx pm2 logs ${APP_NAME} --lines 5 --nostream;
+                                """
+                            }
+                        )
+                    }
                 }
             }
         }
     }
     post {
         success {
-            discordSend description: "✅ Pipeline succeeded for ${APP_NAME}!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "SUCCESS", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+            script {
+                parallel(
+                    "Dev - Success Notification": {
+                        discordSend description: "✅ Dev Pipeline succeeded for ${DEV_APP_NAME}!", 
+                                    footer: "Jenkins Pipeline Notification", 
+                                    link: env.BUILD_URL, 
+                                    result: "SUCCESS", 
+                                    title: env.JOB_NAME, 
+                                    webhookURL: env.DISCORD_WEBHOOK
+                    },
+                    "Prod - Success Notification": {
+                        discordSend description: "✅ Prod Pipeline succeeded for ${PROD_APP_NAME}!", 
+                                    footer: "Jenkins Pipeline Notification", 
+                                    link: env.BUILD_URL, 
+                                    result: "SUCCESS", 
+                                    title: env.JOB_NAME, 
+                                    webhookURL: env.DISCORD_WEBHOOK
+                    }
+                )
+            }
         }
         failure {
-            discordSend description: "❌ Pipeline failed for ${APP_NAME}. Check logs!", footer: "Jenkins Pipeline Notification", link: env.BUILD_URL, result: "FAILURE", title: env.JOB_NAME, webhookURL: env.DISCORD_WEBHOOK
+            script {
+                parallel(
+                    "Dev - Failure Notification": {
+                        discordSend description: "❌ Dev Pipeline failed for ${DEV_APP_NAME}. Check logs!", 
+                                    footer: "Jenkins Pipeline Notification", 
+                                    link: env.BUILD_URL, 
+                                    result: "FAILURE", 
+                                    title: env.JOB_NAME, 
+                                    webhookURL: env.DISCORD_WEBHOOK
+                    },
+                    "Prod - Failure Notification": {
+                        discordSend description: "❌ Prod Pipeline failed for ${PROD_APP_NAME}. Check logs!", 
+                                    footer: "Jenkins Pipeline Notification", 
+                                    link: env.BUILD_URL, 
+                                    result: "FAILURE", 
+                                    title: env.JOB_NAME, 
+                                    webhookURL: env.DISCORD_WEBHOOK
+                    }
+                )
+            }
         }
         always {
             echo "Pipeline completed."
