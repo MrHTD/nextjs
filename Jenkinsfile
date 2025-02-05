@@ -144,10 +144,10 @@ pipeline {
             script {
                 parallel(
                     "Dev - Success Notification": {
-                        sendDiscordNotification(DEV_APP_NAME, "SUCCESS")
+                        sendDiscordNotification(APP_DEV, "SUCCESS")
                     },
                     "Prod - Success Notification": {
-                        sendDiscordNotification(PROD_APP_NAME, "SUCCESS")
+                        sendDiscordNotification(APP_PROD, "SUCCESS")
                     }
                 )
             }
@@ -156,10 +156,10 @@ pipeline {
             script {
                 parallel(
                     "Dev - Failure Notification": {
-                        sendDiscordNotification(DEV_APP_NAME, "FAILURE")
+                        sendDiscordNotification(APP_DEV, "FAILURE")
                     },
                     "Prod - Failure Notification": {
-                        sendDiscordNotification(PROD_APP_NAME, "FAILURE")
+                        sendDiscordNotification(APP_PROD, "FAILURE")
                     }
                 )
             }
