@@ -16,7 +16,7 @@ pipeline {
                             "Dev - Git Operations": {
                                 echo "Pulling latest code from Git repository..."
                                 sh """
-                                    ssh ${env.SSH_USER}@${env.SSH_HOST}<< ENDSSH
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST}<< ENDSSH
                                     set -x
             
                                     # Check if the development directory exists
@@ -61,7 +61,7 @@ pipeline {
                             "Prod - Git Operations": {
                                 echo "Pulling latest code from Git repository..."
                                 sh """
-                                    ssh ${env.SSH_USER}@${env.SSH_HOST}<< ENDSSH
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST}<< ENDSSH
                                     set -x
             
                                     # Check if the development directory exists
@@ -112,7 +112,7 @@ pipeline {
                 sshagent(['myubuntu']) {
                     echo "Building the application..."
                     sh """
-                        ssh ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                         set -x
                         
                         cd /home/ahmed/development/${REPO_NAME}
@@ -142,7 +142,7 @@ pipeline {
                 sshagent(['myubuntu']) {
                     echo "Deploying the application..."
                     sh """
-                        ssh ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+                        ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
 
                         cd /home/ahmed/development/${REPO_NAME};
 
