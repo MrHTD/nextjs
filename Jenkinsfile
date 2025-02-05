@@ -90,10 +90,9 @@ pipeline {
                                         # Check if it's a Git repository
                                         if [ ! -d '.git' ]; then
                                             echo 'Not a Git repository. Initializing repository...';
-                                            git init;
-                                            git remote add origin ${REPO_URL};
-                                            git fetch origin;
+                                            git clone ${REPO_URL};
                                             git switch ${env.BRANCH_NAME};
+                                            git pull origin  ${env.BRANCH_NAME};
                                         else
                                             echo 'Directory is a Git repository. Pulling latest changes...';
                                             git fetch origin;
