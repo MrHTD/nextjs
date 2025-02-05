@@ -1,3 +1,13 @@
+    def sendDiscordNotification(appName, status) {
+        discordSend(
+            description: status == "SUCCESS" ? "✅ ${appName} Pipeline succeeded!" : "❌ ${appName} Pipeline failed. Check logs!",
+            footer: "Jenkins Pipeline Notification",
+            link: env.BUILD_URL,
+            result: status,
+            title: env.JOB_NAME,
+            webhookURL: env.DISCORD_WEBHOOK
+        )
+    }
 pipeline {
     agent any
     environment {
@@ -8,17 +18,6 @@ pipeline {
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
         DEV_PORT = '3000'
         PROD_PORT = '5000'
-    }
-        
-    def sendDiscordNotification(appName, status) {
-        discordSend(
-            description: status == "SUCCESS" ? "✅ ${appName} Pipeline succeeded!" : "❌ ${appName} Pipeline failed. Check logs!",
-            footer: "Jenkins Pipeline Notification",
-            link: env.BUILD_URL,
-            result: status,
-            title: env.JOB_NAME,
-            webhookURL: env.DISCORD_WEBHOOK
-        )
     }
     
     stages {
