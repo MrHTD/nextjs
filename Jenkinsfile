@@ -29,7 +29,6 @@ pipeline {
                                     git fetch origin
                                     git switch ${env.BRANCH_NAME}
                                     git pull origin ${env.BRANCH_NAME}
-                                    ENDSSH
                                 """
                             },
                             "Prod - Git Operations": {
@@ -45,7 +44,6 @@ pipeline {
                                     git fetch origin
                                     git switch ${env.BRANCH_NAME}
                                     git pull origin ${env.BRANCH_NAME}
-                                    ENDSSH
                                 """
                             }
                         )
