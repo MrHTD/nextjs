@@ -122,7 +122,7 @@ pipeline {
                         echo "Building for Dev..."
                     } else if (env.BRANCH_NAME == 'main') {
                         echo "Building for Production..."
-                        }
+                    }
                 }
             }
         }
@@ -135,17 +135,17 @@ pipeline {
             }
         }
 
-        stage('Approve Production Deployment') {
-            when { branch 'main' }  // Runs only on the main branch
-            steps {
-                input message: 'Deploy to Production?', ok: 'Proceed'
-            }
-        }
+        // stage('Approve Production Deployment') {
+        //     when { branch 'main' }  // Runs only on the main branch
+        //     steps {
+        //         input message: 'Deploy to Production?', ok: 'Proceed'
+        //     }
+        // }
 
         stage('Deploy to Prod') {
             when { branch 'main' }
             steps {
-                input message: 'Deploy to QA?', ok: 'Proceed'
+                input message: 'Deploy to Production?', ok: 'Proceed'
                 echo "Deploying to Production..."
                 deployApplication("prod", PROD_APP_NAME, PROD_PORT)
             }
