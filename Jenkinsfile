@@ -16,7 +16,7 @@ pipeline {
     stages {
         stage("Git Pull or Clone") {
             steps {
-                sshagent(['ssh']) {
+                sshagent(['myubuntu']) {
                     script {
                         parallel(
                             "Dev - Git Operations": {
