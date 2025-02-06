@@ -7,7 +7,7 @@ pipeline {
         APP_NAME_PROD = "nextjs-prod"
         DEV_PORT = '3000'
         PROD_PORT = '5000'
-        DISCORD_WEBHOOK = "https://discord.com/api/webhooks/..."
+        DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
     }
 
     stages {
