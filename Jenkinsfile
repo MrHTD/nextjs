@@ -17,19 +17,17 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
-                stage('Build') {
-                    steps {
-                        script {
-                            if (env.BRANCH_NAME == 'dev') {
-                                echo "Building for Dev..."
-                            } else if (env.BRANCH_NAME == 'main') {
-                                echo "Building for Production..."
-                            }
+        stage('Build) {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'dev') {
+                        echo "Building for Dev..."
+                    } else if (env.BRANCH_NAME == 'main') {
+                        echo "Building for Production..."
                         }
-                        sh "yarn install && yarn build"
                     }
-                }
+                    sh "yarn install && yarn build"
+            }
         }
 
         stage('Deploy to Dev') {
