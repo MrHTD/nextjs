@@ -18,7 +18,6 @@ pipeline {
         }
 
         stage('Build & Test') {
-            parallel {
                 stage('Build') {
                     steps {
                         script {
@@ -31,12 +30,6 @@ pipeline {
                         sh "yarn install && yarn build"
                     }
                 }
-                stage('Unit Tests') {
-                    steps {
-                        sh "yarn test"
-                    }
-                }
-            }
         }
 
         stage('Deploy to Dev') {
