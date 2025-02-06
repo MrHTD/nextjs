@@ -127,20 +127,24 @@ pipeline {
             }
         }
 
-        stage('Deploy to Dev') {
-            when { branch 'main' }
-            steps {
-                echo "Deploying to Dev..."
-                deployApplication("development", DEV_APP_NAME, DEV_PORT)
-            }
-        }
-        
-        stage('Deploy to Prod') {
-            when { branch 'main' }
-            steps {
-                input message: 'Deploy to Production?', ok: 'Proceed'
-                echo "Deploying to Production..."
-                deployApplication("production", PROD_APP_NAME, PROD_PORT)
+        stage('Parallel Deployment'){
+            parallel {
+                stage('Deploy to Dev') {
+                    when { branch 'main' }
+                    steps {
+                        echo "Deploying to Dev..."
+                        deployApplication("development", DEV_APP_NAME, DEV_PORT)
+                    }
+                }
+                
+                stage('Deploy to Prod') {
+                    when { branch 'main' }
+                    steps {
+                        input message: 'Deploy to Production?', ok: 'Proceed'
+                        echo "Deploying to Production..."
+                        deployApplication("production", PROD_APP_NAME, PROD_PORT)
+                    }
+                }
             }
         }
         
