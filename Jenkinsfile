@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        stage('Build) {
+        stage('Build') {
             steps {
                 script {
                     if (env.BRANCH_NAME == 'dev') {
@@ -25,7 +25,7 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'main') {
                         echo "Building for Production..."
                         }
-                    }
+                }
             }
         }
 
