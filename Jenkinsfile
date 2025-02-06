@@ -4,8 +4,8 @@ pipeline {
     environment {
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
         
-        DEV_APP_NAME = "mawrid-vendor-dev"
-        PROD_APP_NAME = "mawrid-vendor-prod"
+        DEV_APP_NAME = "nextjs"
+        PROD_APP_NAME = "nextjs-prod"
         
         REPO_NAME = "nextjs"
         DEV_PORT = '3000'
