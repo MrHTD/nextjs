@@ -118,7 +118,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'dev') {
+                    if (env.BRANCH_NAME == 'main') {
                         echo "Building for Dev..."
                     } else if (env.BRANCH_NAME == 'main') {
                         echo "Building for Production..."
@@ -128,7 +128,7 @@ pipeline {
         }
 
         stage('Deploy to Dev') {
-            when { branch 'dev' }
+            when { branch 'main' }
             steps {
                 echo "Deploying to Dev..."
                 deployApplication("development", DEV_APP_NAME, DEV_PORT)
@@ -143,6 +143,7 @@ pipeline {
                 deployApplication("production", PROD_APP_NAME, PROD_PORT)
             }
         }
+        
     }
 
     post {
