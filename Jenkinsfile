@@ -131,22 +131,23 @@ pipeline {
             when { branch 'dev' }
             steps {
                 echo "Deploying to Dev..."
-                deployApplication("dev", APP_NAME_DEV, DEV_PORT)
+                deployApplication("dev", DEV_APP_NAME, DEV_PORT)
             }
         }
 
-        stage('Approve QA Deployment') {
-            when { branch 'dev' }
+        stage('Approve Production Deployment') {
+            when { branch 'main' }  // Runs only on the main branch
             steps {
-                input message: 'Deploy to QA?', ok: 'Proceed'
+                input message: 'Deploy to Production?', ok: 'Proceed'
             }
         }
 
         stage('Deploy to Prod') {
             when { branch 'main' }
             steps {
+                input message: 'Deploy to QA?', ok: 'Proceed'
                 echo "Deploying to Production..."
-                deployApplication("prod", APP_NAME_PROD, PROD_PORT)
+                deployApplication("prod", PROD_APP_NAME, PROD_PORT)
             }
         }
     }
@@ -181,7 +182,6 @@ def deployApplication(envName, appName, port) {
             fi
             npx pm2 save
             npx pm2 logs ${appName} --lines 5 --nostream
-            ENDSSH
         """
     }
 }
