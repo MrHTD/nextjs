@@ -127,6 +127,13 @@ pipeline {
             }
         }
 
+        stage('Deploy to Dev') {
+            steps {
+                echo "Deploying to Dev..."
+                deployApplication("development", DEV_APP_NAME, DEV_PORT)
+            }
+        }
+
         stage('Approve Production Deployment') {
             when { branch 'main' }  // Runs only on the main branch
             steps {
@@ -136,12 +143,6 @@ pipeline {
         
         stage('Parallel Deployment') {
             parallel {
-                stage('Deploy to Dev') {
-                    steps {
-                        echo "Deploying to Dev..."
-                        deployApplication("development", DEV_APP_NAME, DEV_PORT)
-                    }
-                }
         
                 stage('Deploy to Prod') {
                     when { branch 'main' }  // Ensures this runs only on `main`
