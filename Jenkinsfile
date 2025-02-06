@@ -166,7 +166,7 @@ def deployApplication(envName, appName, port) {
     sshagent(['myubuntu']) {
         sh """
             ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
-            cd /home/ahmed/${envName}/${appName}
+            cd /home/ahmed/${envName}/${REPO_NAME}
             if npx pm2 list | grep -qw "${appName}"
             then
                 npx pm2 restart "${appName}"
