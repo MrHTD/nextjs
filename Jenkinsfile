@@ -26,7 +26,6 @@ pipeline {
                         echo "Building for Production..."
                         }
                     }
-                    sh "yarn install && yarn build"
             }
         }
 
