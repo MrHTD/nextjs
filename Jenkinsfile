@@ -3,8 +3,11 @@ pipeline {
 
     environment {
         REPO_URL = "git@github.com:MrHTD/nextjs.git"
-        DEV_REPO_NAME = "mawrid-vendor-dev"
-        PROD_REPO_NAME = "mawrid-vendor-prod"
+        
+        DEV_APP_NAME = "mawrid-vendor-dev"
+        PROD_APP_NAME = "mawrid-vendor-prod"
+        
+        REPO_NAME = "nextjs"
         DEV_PORT = '3000'
         PROD_PORT = '5000'
         DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1328627802194444359/wKmS_3V7cbHvBZzQu8B2JB1A1Hqc9Q0-vj0mIQLqD5ZH_bQCXg5aj0LLdBEqQq4dGem5"
@@ -22,10 +25,10 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     set -x
                                     cd /home/devxonic/development
-                                    if [ ! -d '${DEV_REPO_NAME}' ]; then
-                                        git clone ${DEV_REPO_URL} ${DEV_REPO_NAME}
+                                    if [ ! -d '${REPO_NAME}' ]; then
+                                        git clone ${REPO_URL} ${REPO_NAME}
                                     fi
-                                    cd ${DEV_REPO_NAME}
+                                    cd ${REPO_NAME}
                                     git fetch origin
                                     git switch ${env.BRANCH_NAME}
                                     git pull origin ${env.BRANCH_NAME}
@@ -37,10 +40,10 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
                                     set -x
                                     cd /home/devxonic/development
-                                    if [ ! -d '${PROD_REPO_NAME}' ]; then
-                                        git clone ${PROD_REPO_URL} ${PROD_REPO_NAME}
+                                    if [ ! -d '${REPO_NAME}' ]; then
+                                        git clone ${REPO_URL} ${REPO_NAME}
                                     fi
-                                    cd ${PROD_REPO_NAME}
+                                    cd ${REPO_NAME}
                                     git fetch origin
                                     git switch ${env.BRANCH_NAME}
                                     git pull origin ${env.BRANCH_NAME}
