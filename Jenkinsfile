@@ -155,9 +155,9 @@ pipeline {
             script {
                 sendDiscordNotification("✅ Deployment succeeded!", "SUCCESS")
             }
-             mail to: 'mughis01@gmail.com',
-             subject: "Successful : Build ${env.JOB_NAME}",
-             body: "Build Successful ${env.JOB_NAME} and Build number: ${env.BUILD_NUMBER} .\n\n View the logs at : \n ${env.BUILD_URL}"
+             // mail to: 'mughis01@gmail.com',
+             // subject: "Successful : Build ${env.JOB_NAME}",
+             // body: "Build Successful ${env.JOB_NAME} and Build number: ${env.BUILD_NUMBER} .\n\n View the logs at : \n ${env.BUILD_URL}"
         }
         failure {
             script {
