@@ -126,34 +126,27 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy to Dev') {
             steps {
                 echo "Deploying to Dev..."
                 deployApplication("development", DEV_APP_NAME, DEV_PORT)
             }
         }
-
+        
         stage('Approve Production Deployment') {
-            when { branch 'main' }  // Runs only on the main branch
+            when { branch 'main' } // Runs only on the main branch
             steps {
                 input message: 'Deploy to Production?', ok: 'Proceed'
             }
         }
         
-        stage('Parallel Deployment') {
-            parallel {
-        
-                stage('Deploy to Prod') {
-                    when { branch 'main' }  // Ensures this runs only on `main`
-                    steps {
-                        echo "Deploying to Production..."
-                        deployApplication("production", PROD_APP_NAME, PROD_PORT)
-                    }
-                }
+        stage('Deploy to Prod') {
+            when { branch 'main' } // Runs only on the main branch
+            steps {
+                echo "Deploying to Production..."
+                deployApplication("production", PROD_APP_NAME, PROD_PORT)
             }
         }
-
         
     }
 
