@@ -11,9 +11,46 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage("Git Pull or Clone") {
             steps {
-                git branch: env.BRANCH_NAME, url: env.REPO_URL
+                sshagent(['ssh']) {
+                    script {
+                        parallel(
+                            "Dev - Git Operations": {
+                                echo "Running Git operations for Dev..."
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+                                    set -x
+                                    cd /home/devxonic/development
+                                    if [ ! -d '${DEV_REPO_NAME}' ]; then
+                                        git clone ${DEV_REPO_URL} ${DEV_REPO_NAME}
+                                    fi
+                                    cd ${DEV_REPO_NAME}
+                                    git fetch origin
+                                    git switch ${env.BRANCH_NAME}
+                                    git pull origin ${env.BRANCH_NAME}
+                                    ENDSSH
+                                """
+                            },
+                            "Prod - Git Operations": {
+                                echo "Running Git operations for Prod..."
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${env.SSH_USER}@${env.SSH_HOST} << ENDSSH
+                                    set -x
+                                    cd /home/devxonic/development
+                                    if [ ! -d '${PROD_REPO_NAME}' ]; then
+                                        git clone ${PROD_REPO_URL} ${PROD_REPO_NAME}
+                                    fi
+                                    cd ${PROD_REPO_NAME}
+                                    git fetch origin
+                                    git switch ${env.BRANCH_NAME}
+                                    git pull origin ${env.BRANCH_NAME}
+                                    ENDSSH
+                                """
+                            }
+                        )
+                    }
+                }
             }
         }
 
