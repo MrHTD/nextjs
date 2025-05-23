@@ -1,0 +1,35 @@
+# Ignore node_modules
+node_modules
+
+# Ignore log files
+*.log
+
+# Ignore build output (unless it's explicitly needed)
+.next
+
+# Ignore local environment files
+.env
+
+# Ignore Dockerfile itself (if not needed in the container)
+Dockerfile
+
+# Ignore Docker Compose files
+docker-compose.yml
+docker-compose.override.yml
+
+# Ignore .git and git history
+.git
+.gitignore
+
+# Ignore IDE/editor config files
+.vscode
+.idea
+
+# Ignore temporary files or caches
+*.swp
+*.bak
+*.tmp
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
