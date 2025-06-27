@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mawrid-vendor
+  labels:
+    app: mawrid-vendor
+    type: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      type: frontend
+  template:
+    metadata:
+      name: mawrid-vendor-pod
+      labels:
+        app: mawrid-vendor
+        type: frontend
+    spec:
+      containers:
+        - name: mawrid-vendor
+          image: devopsdevxonic/mawrid-vendor:latest
