@@ -1,19 +1,25 @@
-# 1. Install dependencies (with dev for build)
-FROM node:23-alpine AS deps
+FROM node:lts-alpine AS base
+
+FROM base AS deps
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock* package-lock.json* ./
 RUN yarn install --frozen-lockfile
 
 # 2. Build the Next.js app
-FROM node:23-alpine AS builder
+FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN yarn build
+RUN \
+    if [ -f yarn.lock ]; then yarn run build; \
+    elif [ -f package-lock.json ]; then yarn run build; \
+    else echo "No lock file found, skipping build" && exit 1; \
+    fi
 
 # 3. Final production image
-FROM node:23-alpine AS runner
+FROM base AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
 
 # Copy only necessary files for standalone

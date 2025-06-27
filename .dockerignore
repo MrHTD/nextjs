@@ -1,35 +1,45 @@
-# Ignore node_modules
+# Node modules
 node_modules
-
-# Ignore log files
-*.log
-
-# Ignore build output (unless it's explicitly needed)
 .next
+npm-debug.log
+yarn-error.log
+.cache
+.eslintcache
+.swc
 
-# Ignore local environment files
-.env
-
-# Ignore Dockerfile itself (if not needed in the container)
-Dockerfile
-
-# Ignore Docker Compose files
-docker-compose.yml
-docker-compose.override.yml
-
-# Ignore .git and git history
+# Git
 .git
 .gitignore
 
-# Ignore IDE/editor config files
+# OS & editor junk
+.DS_Store
 .vscode
 .idea
 
-# Ignore temporary files or caches
-*.swp
-*.bak
-*.tmp
+# Env files (optional if handled differently)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
 
-# Ignore OS-specific files
-.DS_Store
-Thumbs.db
+# Docker artifacts
+Dockerfile
+.dockerignore
+
+# Test & docs
+__tests__/
+*.spec.ts
+*.test.ts
+coverage
+docs
+*.md
+
+# Lockfiles not in use
+package-lock.json
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+.eslintcache

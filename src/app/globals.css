@@ -3,19 +3,69 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #3fac53;
+  --secondary: #171717;
+  --textcolor: #021200;
+  --textsecondary: #2f5629;
+  --paracolor: #a8a8a8;
+  --footerbg: #111111;
+  --inputborder: #d9d9d9;
+  --backgroundcolor: #f9f9f9;
+  --buttoncolor: #FF5228;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
-body {
+/* body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+} */
+body {
+  @apply font-sans;
+  font-family: var(--font-poppins), sans-serif;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(63, 172, 83, 0.8); /* Using var(--primary) with opacity */
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* For Firefox */
+::-moz-scrollbar{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(63, 172, 83, 0.8) rgba(241, 241, 241, 0.8);
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 }
