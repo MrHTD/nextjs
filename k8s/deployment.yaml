@@ -2,11 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mawrid-vendor
+  namespace: prod
   labels:
     app: mawrid-vendor
     type: frontend
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       type: frontend
@@ -19,4 +25,4 @@ spec:
     spec:
       containers:
         - name: mawrid-vendor
-          image: devopsdevxonic/mawrid-vendor:latest
+          image: REPLACE_IMAGE_TAG
